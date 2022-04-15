@@ -2,14 +2,14 @@ import { Item, ItemCheckTable } from "./types/item";
 
 // Sample Data
 export const sampleItems: Item[] = [
-  { id: "Taking exercise!-1650041675479", content: "Taking exercise!" },
+  { id: "Hello🌎-1650041675479", content: "Hello🌎" },
   {
-    id: "Try to add something :)-1650041890864",
-    content: "Try to add something :)",
+    id: "Complete🎉-1650041890864",
+    content: "Complete🎉",
   },
 ];
 
 export const sampleCheckTable: ItemCheckTable = {
-  "Taking exercise!-1650041675479": true,
-  "Try to add something :)-1650041890864": false,
+  "Hello🌎-1650041675479": false,
+  "Complete🎉-1650041890864": true,
 };
