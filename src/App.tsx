@@ -5,6 +5,11 @@ import InputBox from "./components/InputBox";
 import Header from "./components/Header";
 import { Item, ItemCheckTable, ShowingMode } from "./types/item";
 import { sampleItems, sampleCheckTable } from "./sampleData";
+import {
+  setStorageItems,
+  getStorageItems,
+  updateStorageCheckTable,
+} from "./utils/localStorage";
 
 import GlobalStyle from "./styles/Global";
 import styled, { ThemeProvider } from "styled-components";
@@ -30,13 +35,33 @@ const Footer = styled.footer`
   font-size: 1.2rem;
 `;
 
+// use local cache or sample data
+function getDefaultData() {
+  const [storageItems, storageItemsTable] = getStorageItems();
+  let defaultItems, defaultItemsTable;
+
+  if (storageItems && storageItemsTable) {
+    console.log("use cache");
+    defaultItems = storageItems as Item[];
+    defaultItemsTable = storageItemsTable as ItemCheckTable;
+  } else {
+    console.log("use sample");
+    defaultItems = sampleItems;
+    defaultItemsTable = sampleCheckTable;
+  }
+
+  return [defaultItems, defaultItemsTable] as const;
+}
+
 const App: React.FC = () => {
+  const [defaultItems, defaultItemsTable] = getDefaultData();
+
   const [showingMode, setShowingMode] = useState<ShowingMode>("All");
   const [currentTheme, setCurrentTheme] = useState(DarkTheme);
   const [inputValue, setInputValue] = useState("");
-  const [items, setItems] = useState<Item[]>(sampleItems);
+  const [items, setItems] = useState<Item[]>(defaultItems);
   const [itemCheckTable, setItemCheckTable] =
-    useState<ItemCheckTable>(sampleCheckTable);
+    useState<ItemCheckTable>(defaultItemsTable);
 
   // items
   function createItem(content: string) {
@@ -63,6 +88,8 @@ const App: React.FC = () => {
     const newItemCheckTable = { ...itemCheckTable };
     newItemCheckTable[newItem.id] = false;
     setItemCheckTable(newItemCheckTable);
+
+    setStorageItems(newItems, newItemCheckTable);
   }
 
   const handleCheckItem = useCallback(
@@ -70,6 +97,8 @@ const App: React.FC = () => {
       const newItemCheckTable = { ...itemCheckTable };
       newItemCheckTable[id] = !newItemCheckTable[id];
       setItemCheckTable(newItemCheckTable);
+
+      updateStorageCheckTable(newItemCheckTable);
     },
     [itemCheckTable]
   );
@@ -84,6 +113,8 @@ const App: React.FC = () => {
       const newItemCheckTable = { ...itemCheckTable };
       delete newItemCheckTable[id];
       setItemCheckTable(newItemCheckTable);
+
+      setStorageItems(newItems, newItemCheckTable);
     },
     [items, itemCheckTable]
   );
@@ -98,6 +129,8 @@ const App: React.FC = () => {
         newItemCheckTable[key] = itemCheckTable[key];
     }
     setItemCheckTable(newItemCheckTable);
+
+    setStorageItems(newItems, newItemCheckTable);
   }, [items, itemCheckTable]);
 
   const handleShowingModeChange = useCallback(
