@@ -1,6 +1,5 @@
 import React, { useState, useCallback } from "react";
 import { ToastContainer, toast } from "react-toastify";
-import update from "immutability-helper";
 
 // components
 import Todo from "./components/Todo";
@@ -14,7 +13,11 @@ import { DarkTheme, LightTheme } from "./styles/themes";
 import "react-toastify/dist/ReactToastify.css";
 
 import { Item, ItemCheckTable, ShowingMode } from "./types/item";
-import { setStorageItems, updateStorageCheckTable } from "./utils/localStorage";
+import {
+  setStorageItems,
+  updateStorageCheckTable,
+  updateStorageItems,
+} from "./utils/localStorage";
 import getDefaultData, { defaultTheme } from "./defaultData";
 
 const Main = styled.main`
@@ -139,16 +142,19 @@ const App: React.FC = () => {
   }, [currentTheme]);
 
   // dnd
-  const moveItem = useCallback((dragIndex: number, hoverIndex: number) => {
-    setItems((prevItems: Item[]) =>
-      update(prevItems, {
-        $splice: [
-          [dragIndex, 1],
-          [hoverIndex, 0, prevItems[dragIndex] as Item],
-        ],
-      })
-    );
-  }, []);
+  const moveItem = useCallback(
+    (dragIndex: number, hoverIndex: number) => {
+      setItems((prevItems) => {
+        const newItems = [...prevItems];
+        newItems.splice(dragIndex, 1);
+        newItems.splice(hoverIndex, 0, prevItems[dragIndex]);
+
+        updateStorageItems(newItems);
+        return newItems;
+      });
+    },
+    [items]
+  );
 
   return (
     <>

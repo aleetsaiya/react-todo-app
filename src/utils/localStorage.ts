@@ -20,3 +20,7 @@ export function setStorageItems(items: Item[], itemCheckTable: ItemCheckTable) {
 export function updateStorageCheckTable(itemCheckTable: ItemCheckTable) {
   window.localStorage.setItem("itemCheckTable", JSON.stringify(itemCheckTable));
 }
+
+export function updateStorageItems(items: Item[]) {
+  window.localStorage.setItem("items", JSON.stringify(items));
+}

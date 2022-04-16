@@ -1,10 +1,8 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import checkIcon from "../assets/icon-check.svg";
 import crossIcon from "../assets/icon-cross.svg";
 import styled from "styled-components";
-
-import { useDrag, useDrop } from "react-dnd";
-import type { Identifier, XYCoord } from "dnd-core";
+import useDnd from "../hooks/useDnd";
 
 type CheckingProps = {
   isCheck: boolean;
@@ -51,7 +49,7 @@ const CrossBtn = styled.button<{ show: boolean }>`
 `;
 
 // item style
-const ItemStyle = styled.li<CheckingProps>`
+const ItemStyle = styled.li<{ isCheck: boolean; opacity: number }>`
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -64,6 +62,7 @@ const ItemStyle = styled.li<CheckingProps>`
   border-bottom: solid 1px ${(props) => props.theme.borderColor};
   transition: all ease 0.2s;
   cursor: pointer;
+  opacity: ${(props) => props.opacity};
 
   &:first-child {
     border-top-left-radius: 5px;
@@ -81,16 +80,6 @@ type ItemProps = {
   moveItem: (dragIndex: number, hoverIndex: number) => void;
 };
 
-type DragItem = {
-  index: number;
-  id: string;
-  type: string;
-};
-
-const DragItemTypes = {
-  Item: "item",
-};
-
 const Item: React.FC<ItemProps> = ({
   id,
   index,
@@ -101,56 +90,7 @@ const Item: React.FC<ItemProps> = ({
   moveItem,
 }) => {
   const [mouseEnter, setMouseEnter] = useState(false);
-
-  const ref = useRef<HTMLDivElement>(null);
-  const [{ handlerId }, drop] = useDrop<
-    DragItem,
-    void,
-    { handlerId: Identifier | null }
-  >({
-    accept: DragItemTypes.Item,
-    collect(monitor) {
-      return {
-        handlerId: monitor.getHandlerId(),
-      };
-    },
-    hover(item: DragItem, monitor) {
-      if (!ref.current) {
-        return;
-      }
-      const dragIndex = item.index;
-      const hoverIndex = index;
-
-      if (dragIndex === hoverIndex) {
-        return;
-      }
-
-      const hoverBoundingRect = ref.current?.getBoundingClientRect();
-      const hoverMiddleY =
-        (hoverBoundingRect.bottom - hoverBoundingRect.top) / 3;
-      const clientOffset = monitor.getClientOffset();
-      const hoverClientY = (clientOffset as XYCoord).y - hoverBoundingRect.top;
-
-      if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
-        return;
-      }
-      if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
-        return;
-      }
-      moveItem(dragIndex, hoverIndex);
-      item.index = hoverIndex;
-    },
-  });
-
-  const [{ isDragging }, drag] = useDrag({
-    type: DragItemTypes.Item,
-    item: () => {
-      return { id, index };
-    },
-    collect: (monitor: any) => ({
-      isDragging: monitor.isDragging(),
-    }),
-  });
+  const [ref, handlerId, dragStyle] = useDnd(id, index, moveItem);
 
   function handleMouseEnter() {
     setMouseEnter(true);
@@ -160,24 +100,22 @@ const Item: React.FC<ItemProps> = ({
     setMouseEnter(false);
   }
 
-  const opacity = isDragging ? 0.2 : 1;
-  drag(drop(ref));
-
   return (
     <ItemStyle
       isCheck={isCheck}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMosueLeave}
+      ref={ref}
+      data-handler-id={handlerId}
+      opacity={dragStyle.opacity}
     >
-      <div ref={ref} data-handler-id={handlerId} style={{ opacity }}>
-        <CheckBtn onClick={() => onCheck(id)} isCheck={isCheck}>
-          <CheckIcon src={checkIcon} alt="check-icon" isCheck={isCheck} />
-        </CheckBtn>
-        {content}
-        <CrossBtn onClick={() => onClear(id)} show={mouseEnter}>
-          <CrossIcon src={crossIcon} alt="cross-icon" />
-        </CrossBtn>
-      </div>
+      <CheckBtn onClick={() => onCheck(id)} isCheck={isCheck}>
+        <CheckIcon src={checkIcon} alt="check-icon" isCheck={isCheck} />
+      </CheckBtn>
+      {content}
+      <CrossBtn onClick={() => onClear(id)} show={mouseEnter}>
+        <CrossIcon src={crossIcon} alt="cross-icon" />
+      </CrossBtn>
     </ItemStyle>
   );
 };
