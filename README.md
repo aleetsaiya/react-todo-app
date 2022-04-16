@@ -7,7 +7,7 @@ In this challenge, I use Typescript and React to build. Users can toggle the App
 ## Screenshot
 
 ### Desktop
-<img width="626" alt="螢幕擷取畫面 2022-04-16 131232" src="https://user-images.githubusercontent.com/67775387/163662572-c6595915-7a7a-43e0-85cc-1bc0bb29fd3e.png">
+<img width="500" alt="螢幕擷取畫面 2022-04-16 131232" src="https://user-images.githubusercontent.com/67775387/163662572-c6595915-7a7a-43e0-85cc-1bc0bb29fd3e.png">
 
 ### Mobile  
 <img width="214" alt="preview-mobile" src="https://user-images.githubusercontent.com/67775387/163665307-c9affecf-7fd3-42bc-ae37-d04a0f389171.png">
