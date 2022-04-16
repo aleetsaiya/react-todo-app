@@ -1,24 +1,21 @@
 import React, { useState, useCallback } from "react";
+import { ToastContainer, toast } from "react-toastify";
 
+// components
 import Todo from "./components/Todo";
 import InputBox from "./components/InputBox";
 import Header from "./components/Header";
-import { Item, ItemCheckTable, ShowingMode } from "./types/item";
-import { sampleItems, sampleCheckTable } from "./sampleData";
-import {
-  setStorageItems,
-  getStorageItems,
-  updateStorageCheckTable,
-} from "./utils/localStorage";
 
+// style
 import GlobalStyle from "./styles/Global";
 import styled, { ThemeProvider } from "styled-components";
 import { DarkTheme, LightTheme } from "./styles/themes";
-
-import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-// style
+import { Item, ItemCheckTable, ShowingMode } from "./types/item";
+import { setStorageItems, updateStorageCheckTable } from "./utils/localStorage";
+import getDefaultData, { defaultTheme } from "./defaultData";
+
 const Main = styled.main`
   position: absolute;
   top: 6.5rem;
@@ -35,29 +32,11 @@ const Footer = styled.footer`
   font-size: 1.2rem;
 `;
 
-// use local cache or sample data
-function getDefaultData() {
-  const [storageItems, storageItemsTable] = getStorageItems();
-  let defaultItems, defaultItemsTable;
-
-  if (storageItems && storageItemsTable) {
-    console.log("use cache");
-    defaultItems = storageItems as Item[];
-    defaultItemsTable = storageItemsTable as ItemCheckTable;
-  } else {
-    console.log("use sample");
-    defaultItems = sampleItems;
-    defaultItemsTable = sampleCheckTable;
-  }
-
-  return [defaultItems, defaultItemsTable] as const;
-}
+const [defaultItems, defaultItemsTable] = getDefaultData();
 
 const App: React.FC = () => {
-  const [defaultItems, defaultItemsTable] = getDefaultData();
-
   const [showingMode, setShowingMode] = useState<ShowingMode>("All");
-  const [currentTheme, setCurrentTheme] = useState(DarkTheme);
+  const [currentTheme, setCurrentTheme] = useState(defaultTheme);
   const [inputValue, setInputValue] = useState("");
   const [items, setItems] = useState<Item[]>(defaultItems);
   const [itemCheckTable, setItemCheckTable] =
