@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from "react";
 import { ToastContainer, toast } from "react-toastify";
+import update from "immutability-helper";
 
 // components
 import Todo from "./components/Todo";
@@ -137,6 +138,18 @@ const App: React.FC = () => {
     else setCurrentTheme(LightTheme);
   }, [currentTheme]);
 
+  // dnd
+  const moveItem = useCallback((dragIndex: number, hoverIndex: number) => {
+    setItems((prevItems: Item[]) =>
+      update(prevItems, {
+        $splice: [
+          [dragIndex, 1],
+          [hoverIndex, 0, prevItems[dragIndex] as Item],
+        ],
+      })
+    );
+  }, []);
+
   return (
     <>
       <ThemeProvider theme={currentTheme}>
@@ -156,6 +169,7 @@ const App: React.FC = () => {
             onCheckItem={handleCheckItem}
             onShowingModeChange={handleShowingModeChange}
             onClearCompletedItems={handleClearCompleteItems}
+            moveItem={moveItem}
           />
           <Footer>Drag and drop to reorder list</Footer>
         </Main>

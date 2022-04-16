@@ -1,6 +1,9 @@
 import React, { memo } from "react";
 import styled from "styled-components";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 import { Item, ItemCheckTable, ShowingMode } from "../types/item";
+
 import ItemList from "./ItemList";
 import ItemListInfo from "./ItemListInfo";
 import ModeBox from "./ModeBox";
@@ -13,6 +16,7 @@ type TodoProps = {
   onClearItem: (id: string) => void;
   onShowingModeChange: (mode: ShowingMode) => void;
   onClearCompletedItems: () => void;
+  moveItem: (dragIndex: number, hoverIndex: number) => void;
 };
 
 function getItemLeft(itemTabel: ItemCheckTable) {
@@ -50,9 +54,10 @@ const Todo: React.FC<TodoProps> = ({
   onClearCompletedItems,
   showingMode,
   itemCheckTable,
+  moveItem,
 }) => {
   return (
-    <>
+    <DndProvider backend={HTML5Backend}>
       <section>
         <ItemList
           items={items}
@@ -60,6 +65,7 @@ const Todo: React.FC<TodoProps> = ({
           onCheckItem={onCheckItem}
           onClearItem={onClearItem}
           checkTable={itemCheckTable}
+          moveItem={moveItem}
         />
         <ItemListInfo
           itemLeft={getItemLeft(itemCheckTable)}
@@ -75,7 +81,7 @@ const Todo: React.FC<TodoProps> = ({
           onShowingModeChange={onShowingModeChange}
         />
       </MobileOnlyBlock>
-    </>
+    </DndProvider>
   );
 };
 
