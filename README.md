@@ -17,7 +17,8 @@ In this challenge, I use Typescript and React to build. Users can toggle the App
 
 - Cache with localStorage
 - Dark & Light theme
-- Filter active items & completed items. 
+- Filter feature with active items & completed items 
+- Drag item to re-order to-do list items
 
 ## Links
 
@@ -27,6 +28,8 @@ In this challenge, I use Typescript and React to build. Users can toggle the App
 
 - [Typescript](https://www.typescriptlang.org/)
 - [React](https://reactjs.org/)
-- [Styled Components](https://styled-components.com/)
-- [Eslint](https://eslint.org/)
 - [Webpack](https://webpack.js.org/)
+- [Eslint](https://eslint.org/)
+- [Styled Components](https://styled-components.com/)
+- [React DnD](https://react-dnd.github.io/react-dnd/about)
+- [React Toastify](https://fkhadra.github.io/react-toastify/introduction)
