@@ -27,9 +27,7 @@ const App: React.FC = () => {
   function getTitle() {
     const url = location.pathname;
     if (url === "/") return "Todo";
-    else if (url === "/todo") return "Todo";
     else if (url === "/login") return "Login";
-    else if (url === "/signup") return "Sign Up";
     else return "Not Found";
   }
 
