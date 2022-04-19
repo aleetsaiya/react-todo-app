@@ -1,5 +1,5 @@
 import React, { memo } from "react";
-import { ShowingMode } from "../types/item";
+import { ShowingMode } from "../types/Item";
 import styled from "styled-components";
 import ModeBox from "./ModeBox";
 
@@ -26,8 +26,10 @@ const ClearBtn = styled.button`
 
 const Row = styled.div`
   display: flex;
+  width: 100%;
   justify-content: space-between;
   align-items: center;
+  position: absolute;
   background-color: ${(props) => props.theme.itemBkColor};
   padding: 2rem 3.5rem;
   border-bottom-right-radius: 5px;

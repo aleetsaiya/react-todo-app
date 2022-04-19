@@ -1,26 +1,17 @@
-import React, { useState, useCallback } from "react";
-import { ToastContainer, toast } from "react-toastify";
+import React from "react";
+import { ToastContainer } from "react-toastify";
+import { Routes, Route, useLocation } from "react-router-dom";
 
-// components
-import Todo from "./components/Todo";
-import InputBox from "./components/InputBox";
+import Todo from "./pages/Todo";
+import Login from "./pages/Login";
 import Header from "./components/Header";
 
-// style
-import GlobalStyle from "./styles/Global";
 import styled, { ThemeProvider } from "styled-components";
-import { DarkTheme, LightTheme } from "./styles/themes";
-import "react-toastify/dist/ReactToastify.css";
+import GlobalStyle from "./styles/Global";
+import useTheme from "./hooks/useTheme";
+import { defaultTheme } from "./defaultData";
 
-import { Item, ItemCheckTable, ShowingMode } from "./types/item";
-import {
-  setStorageItems,
-  updateStorageCheckTable,
-  updateStorageItems,
-} from "./utils/localStorage";
-import getDefaultData, { defaultTheme } from "./defaultData";
-
-const Main = styled.main`
+const Container = styled.div`
   position: absolute;
   top: 6.5rem;
   left: 50%;
@@ -29,156 +20,32 @@ const Main = styled.main`
   width: 90%;
 `;
 
-const Footer = styled.footer`
-  margin: 5rem;
-  text-align: center;
-  color: ${(props) => props.theme.secondColor};
-  font-size: 1.2rem;
-`;
-
-const [defaultItems, defaultItemsTable] = getDefaultData();
-
 const App: React.FC = () => {
-  const [showingMode, setShowingMode] = useState<ShowingMode>("All");
-  const [currentTheme, setCurrentTheme] = useState(defaultTheme);
-  const [inputValue, setInputValue] = useState("");
-  const [items, setItems] = useState<Item[]>(defaultItems);
-  const [itemCheckTable, setItemCheckTable] =
-    useState<ItemCheckTable>(defaultItemsTable);
+  const theme = useTheme(defaultTheme);
+  const location = useLocation();
 
-  // items
-  function createItem(content: string) {
-    if (content.trim() === "") {
-      toast.error("Cannot create empty item.", {
-        position: "top-center",
-        autoClose: 2500,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-      return;
-    }
-    const newItems = [...items];
-    const newItem: Item = {
-      id: content + "-" + Date.now().toString(),
-      content: content,
-    };
-    newItems.push(newItem);
-    setItems(newItems);
-
-    const newItemCheckTable = { ...itemCheckTable };
-    newItemCheckTable[newItem.id] = false;
-    setItemCheckTable(newItemCheckTable);
-
-    setStorageItems(newItems, newItemCheckTable);
+  function getTitle() {
+    const url = location.pathname;
+    if (url === "/") return "Todo";
+    else if (url === "/todo") return "Todo";
+    else if (url === "/login") return "Login";
+    else if (url === "/signup") return "Sign Up";
+    else return "Not Found";
   }
-
-  const handleCheckItem = useCallback(
-    (id: string) => {
-      const newItemCheckTable = { ...itemCheckTable };
-      newItemCheckTable[id] = !newItemCheckTable[id];
-      setItemCheckTable(newItemCheckTable);
-
-      updateStorageCheckTable(newItemCheckTable);
-    },
-    [itemCheckTable]
-  );
-
-  const handleClearItem = useCallback(
-    (id: string) => {
-      const newItems = [...items];
-      const index = newItems.findIndex((item) => item.id === id);
-      newItems.splice(index, 1);
-      setItems(newItems);
-
-      const newItemCheckTable = { ...itemCheckTable };
-      delete newItemCheckTable[id];
-      setItemCheckTable(newItemCheckTable);
-
-      setStorageItems(newItems, newItemCheckTable);
-    },
-    [items, itemCheckTable]
-  );
-
-  const handleClearCompleteItems = useCallback(() => {
-    const newItems = items.filter((item) => itemCheckTable[item.id] === false);
-    setItems(newItems);
-
-    const newItemCheckTable = {} as ItemCheckTable;
-    for (const key in itemCheckTable) {
-      if (itemCheckTable[key] === false)
-        newItemCheckTable[key] = itemCheckTable[key];
-    }
-    setItemCheckTable(newItemCheckTable);
-
-    setStorageItems(newItems, newItemCheckTable);
-  }, [items, itemCheckTable]);
-
-  const handleShowingModeChange = useCallback(
-    (mode: ShowingMode) => {
-      setShowingMode(mode);
-    },
-    [showingMode]
-  );
-
-  // input
-  function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const value = e.target.value;
-    setInputValue(value);
-  }
-
-  function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
-    if (e.key !== "Enter") return;
-    createItem(inputValue);
-    setInputValue("");
-  }
-
-  // theme
-  const toggleTheme = useCallback(() => {
-    if (currentTheme === LightTheme) setCurrentTheme(DarkTheme);
-    else setCurrentTheme(LightTheme);
-  }, [currentTheme]);
-
-  // dnd
-  const moveItem = useCallback(
-    (dragIndex: number, hoverIndex: number) => {
-      setItems((prevItems) => {
-        const newItems = [...prevItems];
-        newItems.splice(dragIndex, 1);
-        newItems.splice(hoverIndex, 0, prevItems[dragIndex]);
-
-        updateStorageItems(newItems);
-        return newItems;
-      });
-    },
-    [items]
-  );
 
   return (
     <>
-      <ThemeProvider theme={currentTheme}>
+      <ThemeProvider theme={theme.currentTheme}>
         <GlobalStyle />
-        <Main>
-          <Header title="TODO" toggleTheme={toggleTheme} />
-          <InputBox
-            value={inputValue}
-            onChange={handleInputChange}
-            onKeyDown={handleKeyDown}
-          />
-          <Todo
-            items={items}
-            showingMode={showingMode}
-            itemCheckTable={itemCheckTable}
-            onClearItem={handleClearItem}
-            onCheckItem={handleCheckItem}
-            onShowingModeChange={handleShowingModeChange}
-            onClearCompletedItems={handleClearCompleteItems}
-            moveItem={moveItem}
-          />
-          <Footer>Drag and drop to reorder list</Footer>
-        </Main>
+        <Container>
+          <Header title={getTitle()} toggleTheme={theme.toggleTheme} />
+          <main>
+            <Routes>
+              <Route path="/" element={<Todo />} />
+              <Route path="/login" element={<Login />} />
+            </Routes>
+          </main>
+        </Container>
       </ThemeProvider>
       <ToastContainer
         position="top-center"
@@ -187,10 +54,7 @@ const App: React.FC = () => {
         newestOnTop={false}
         closeOnClick
         rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme={currentTheme === LightTheme ? "light" : "dark"}
+        theme={theme.isLightTheme() ? "light" : "dark"}
       />
     </>
   );

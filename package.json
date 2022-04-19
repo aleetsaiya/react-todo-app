@@ -11,6 +11,7 @@
   "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.17.9",
+    "@babel/plugin-transform-runtime": "^7.17.0",
     "@babel/preset-env": "^7.16.11",
     "@babel/preset-react": "^7.16.7",
     "@babel/preset-typescript": "^7.16.7",
@@ -38,10 +39,13 @@
     "webpack-dev-server": "^4.8.1"
   },
   "dependencies": {
+    "firebase": "^9.6.11",
     "react": "^17.0.2",
     "react-dnd": "^16.0.0",
     "react-dnd-html5-backend": "^16.0.0",
     "react-dom": "^17.0.2",
+    "react-icons": "^4.3.1",
+    "react-router-dom": "^6.3.0",
     "react-toastify": "^8.2.0",
     "styled-components": "^5.3.5"
   }

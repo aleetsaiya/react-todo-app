@@ -26,10 +26,10 @@ export default createGlobalStyle`
   }
 
   section {
-    background-color: #fff;
+    color: ${(props) => props.theme.color};
+    background-color: ${(props) => props.theme.itemBkColor};
     border-radius: 5px;
     box-shadow: 0 4px 8px 0px rgba(0, 0, 0, 0.2);
-    background-color: transparent;
   }
 
   button {

@@ -1,26 +1,22 @@
-import React from "react";
-import { ShowingMode } from "../types/item";
+import React, { memo } from "react";
+import { ShowingMode } from "../types/Item";
 import styled from "styled-components";
 
-type ModeBoxProps = {
-  showOnMobile?: boolean;
-  showingMode: ShowingMode;
-  onShowingModeChange: (mode: ShowingMode) => void;
-};
-
-const ModeBoxStyle = styled.div<{ showOnMobile: boolean }>`
+const ModeBoxStyle = styled.div`
   width: 18rem;
   display: flex;
   align-items: center;
   justify-content: space-around;
   margin: 0 auto;
-
-  @media (min-width: 769px) {
-    display: ${(props) => (props.showOnMobile ? "none" : "flex")};
-  }
+  background-color: ${(props) => props.theme.itemBkColor};
 
   @media (max-width: 768px) {
-    display: ${(props) => (props.showOnMobile ? "flex" : "none")};
+    position: absolute;
+    bottom: -5.5rem;
+    left: 0rem;
+    width: 100%;
+    border-radius: 5px;
+    min-height: 4rem;
   }
 `;
 
@@ -40,15 +36,19 @@ const ModeBtn = styled.button<{
 
 const isActive = (current: ShowingMode, target: ShowingMode) =>
   current === target;
-const modes: Readonly<ShowingMode[]> = ["All", "Active", "Completed"] as const;
 
+type ModeBoxProps = {
+  showingMode: ShowingMode;
+  onShowingModeChange: (mode: ShowingMode) => void;
+};
+
+const modes: Readonly<ShowingMode[]> = ["All", "Active", "Completed"] as const;
 const ModeBox: React.FC<ModeBoxProps> = ({
-  showOnMobile = false,
   showingMode,
   onShowingModeChange,
 }) => {
   return (
-    <ModeBoxStyle showOnMobile={showOnMobile}>
+    <ModeBoxStyle>
       {modes.map((mode: ShowingMode) => (
         <ModeBtn
           key={mode}
@@ -62,4 +62,4 @@ const ModeBox: React.FC<ModeBoxProps> = ({
   );
 };
 
-export default ModeBox;
+export default memo(ModeBox);

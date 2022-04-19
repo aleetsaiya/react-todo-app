@@ -1,6 +1,6 @@
 import React, { memo } from "react";
 import Item from "./Item";
-import { Item as ItemType, ItemCheckTable, ShowingMode } from "../types/item";
+import { Item as ItemType, ItemCheckTable, ShowingMode } from "../types/Item";
 
 function filter(isCheck: boolean, mode: ShowingMode) {
   if (

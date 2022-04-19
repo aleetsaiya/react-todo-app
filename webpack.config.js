@@ -39,6 +39,9 @@ module.exports = {
       filename: "index.[hash].css",
     }),
   ],
+  devServer: {
+    port: 9099,
+  },
   resolve: {
     extensions: [".tsx", ".ts", ".jsx", ".js"],
     alias: {

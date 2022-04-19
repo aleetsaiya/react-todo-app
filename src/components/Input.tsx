@@ -9,23 +9,27 @@ const InputStyle = styled.input`
 
 type InputProps = {
   value: string;
-  placeHolder: string;
+  type?: string;
+  placeHolder?: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 };
 
 const Input: React.FC<InputProps> = ({
   value,
   onChange,
   onKeyDown,
-  placeHolder,
+  type = "text",
+  placeHolder = "",
 }) => {
   return (
     <InputStyle
       value={value}
+      type={type}
       onChange={onChange}
       onKeyDown={onKeyDown}
       placeholder={placeHolder}
+      autoComplete="off"
     />
   );
 };
