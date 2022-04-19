@@ -5,6 +5,7 @@ import { initFirebase } from "./firebase";
 import { BrowserRouter } from "react-router-dom";
 
 initFirebase();
+window.localStorage.clear();
 render(
   <React.StrictMode>
     <BrowserRouter>
