@@ -6,7 +6,7 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
 } from "firebase/auth";
-import { getDatabase, ref, child, get } from "firebase/database";
+import { getDatabase, ref, child, get, set } from "firebase/database";
 import config from "./firebaseConfig";
 import { Item, ItemCheckTable } from "./types/Item";
 
@@ -15,22 +15,13 @@ export function initFirebase() {
   initializeApp(config);
 }
 
-export async function getDataFromDatabase(uid: string) {
+export async function getDataFromDb(uid: string) {
   const dbRef = ref(getDatabase());
   const snapshot = await get(child(dbRef, `users/${uid}`));
   if (snapshot.exists()) {
+    console.log("get from database");
     const { items, itemCheckTable } = snapshot.val();
-
-    const arrItems: Item[] = [];
-    for (const key in items) {
-      const i: Item = {
-        id: key,
-        content: items[key],
-      };
-      arrItems.push(i);
-    }
-
-    return [arrItems, itemCheckTable] as [Item[], ItemCheckTable];
+    return [items, itemCheckTable] as [Item[], ItemCheckTable];
   } else {
     return [null, null];
   }
@@ -51,11 +42,23 @@ export async function loginWithGoogle() {
 
 export async function createUser(email: string, password: string) {
   const auth = getAuth();
-  return createUserWithEmailAndPassword(auth, email, password)
-    .then(() => {
-      return true;
-    })
-    .catch(() => {
-      return false;
-    });
+  const { user } = await createUserWithEmailAndPassword(auth, email, password);
+  return user.uid;
+}
+
+export function updateDbItems(uid: string, items: Item[]) {
+  console.log("update db items");
+  const db = getDatabase();
+  set(ref(db, "users/" + uid + "/items"), {
+    ...items,
+  });
+}
+
+export function updateDbItemCheckTable(
+  uid: string,
+  itemCheckTable: ItemCheckTable
+) {
+  console.log("update db table");
+  const db = getDatabase();
+  set(ref(db, "users/" + uid + "/itemCheckTable"), itemCheckTable);
 }

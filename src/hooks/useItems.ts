@@ -1,11 +1,8 @@
 import { useState, useCallback } from "react";
 import { Item, ItemCheckTable, ShowingMode } from "../types/Item";
 import { toast } from "react-toastify";
-import {
-  setStorageItems,
-  updateStorageCheckTable,
-  updateStorageItems,
-} from "../localStorage";
+import { updateDbItems, updateDbItemCheckTable } from "../firebase";
+import { getStorageUserID } from "../localStorage";
 
 export default function useItems(
   defaultItems: Item[],
@@ -16,7 +13,7 @@ export default function useItems(
     useState<ItemCheckTable>(defaultItemsTable);
   const [showingMode, setShowingMode] = useState<ShowingMode>("All");
 
-  function update(items: Item[], itemCheckTable: ItemCheckTable) {
+  function updateState(items: Item[], itemCheckTable: ItemCheckTable) {
     setItems(items);
     setItemCheckTable(itemCheckTable);
   }
@@ -38,7 +35,11 @@ export default function useItems(
     newItemCheckTable[newItem.id] = false;
     setItemCheckTable(newItemCheckTable);
 
-    setStorageItems(newItems, newItemCheckTable);
+    const uid = getStorageUserID();
+    if (uid) {
+      updateDbItems(uid, newItems);
+      updateDbItemCheckTable(uid, newItemCheckTable);
+    }
   }
 
   const onCheckItem = useCallback(
@@ -47,7 +48,10 @@ export default function useItems(
       newItemCheckTable[id] = !newItemCheckTable[id];
       setItemCheckTable(newItemCheckTable);
 
-      updateStorageCheckTable(newItemCheckTable);
+      const uid = getStorageUserID();
+      if (uid) {
+        updateDbItemCheckTable(uid, newItemCheckTable);
+      }
     },
     [itemCheckTable]
   );
@@ -63,7 +67,11 @@ export default function useItems(
       delete newItemCheckTable[id];
       setItemCheckTable(newItemCheckTable);
 
-      setStorageItems(newItems, newItemCheckTable);
+      const uid = getStorageUserID();
+      if (uid) {
+        updateDbItems(uid, newItems);
+        updateDbItemCheckTable(uid, newItemCheckTable);
+      }
     },
     [items, itemCheckTable]
   );
@@ -79,7 +87,11 @@ export default function useItems(
     }
     setItemCheckTable(newItemCheckTable);
 
-    setStorageItems(newItems, newItemCheckTable);
+    const uid = getStorageUserID();
+    if (uid) {
+      updateDbItems(uid, newItems);
+      updateDbItemCheckTable(uid, newItemCheckTable);
+    }
   }, [items, itemCheckTable]);
 
   const moveItem = useCallback(
@@ -89,7 +101,10 @@ export default function useItems(
         newItems.splice(dragIndex, 1);
         newItems.splice(hoverIndex, 0, prevItems[dragIndex]);
 
-        updateStorageItems(newItems);
+        const uid = getStorageUserID();
+        if (uid) {
+          updateDbItems(uid, newItems);
+        }
         return newItems;
       });
     },
@@ -114,7 +129,7 @@ export default function useItems(
   return {
     items,
     itemCheckTable,
-    update,
+    updateState,
     showingMode,
     createItem,
     onClearItem,

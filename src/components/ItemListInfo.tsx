@@ -34,6 +34,7 @@ const Row = styled.div`
   padding: 2rem 3.5rem;
   border-bottom-right-radius: 5px;
   border-bottom-left-radius: 5px;
+  box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.2);
   border-color: ${(props) => props.theme.itemBkColor};
   font-size: 1.4rem;
   color: ${(props) => props.theme.secondColor};

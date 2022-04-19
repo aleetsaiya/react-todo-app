@@ -2,8 +2,8 @@ import React, { useState, useEffect, memo } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { getSampleItems } from "../defaultData";
-import { getStorageItems, getStorageUserID } from "../localStorage";
-import { getDataFromDatabase } from "../firebase";
+import { getDataFromDb } from "../firebase";
+import { getStorageUserID } from "../localStorage";
 import { Link } from "react-router-dom";
 import { GoSignIn } from "react-icons/go";
 
@@ -18,6 +18,7 @@ import useItems from "../hooks/useItems";
 // style
 import styled from "styled-components";
 import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 
 const Hint = styled.div`
   position: relative;
@@ -27,19 +28,22 @@ const Hint = styled.div`
   color: ${(props) => props.theme.secondColor};
   font-size: 1.2rem;
 
-  & > a:hover {
-    color: #3a7bfd;
-  }
-
   & > *:first-child {
     display: flex;
     align-items: center;
+    font-family: inherit;
     justify-content: center;
+    margin-left: auto;
+    margin-right: auto;
     color: inherit;
     text-decoration: none;
     position: absolute;
     left: 1rem;
     transition: all ease 0.2s;
+
+    &:hover {
+      color: #3a7bfd;
+    }
 
     & > * {
       margin-right: 0.2rem;
@@ -47,7 +51,6 @@ const Hint = styled.div`
 
     @media (max-width: 768px) {
       position: relative;
-      display: block;
       margin-bottom: 1.5rem;
     }
   }
@@ -58,29 +61,23 @@ const Hint = styled.div`
   }
 `;
 
-async function getDefaultItems() {
-  // use "database" or "localStorage" data
-  const uid = getStorageUserID();
-  if (uid) {
-    return await getDataFromDatabase(uid);
-  } else {
-    return getStorageItems();
-  }
-}
-
 const [sampleItems, sampleCheckTable] = getSampleItems();
 
 const Todo: React.FC = () => {
+  const uid = getStorageUserID();
+
   const [inputValue, setInputValue] = useState("");
-  const items = useItems(sampleItems, sampleCheckTable);
+  const items = useItems(uid ? [] : sampleItems, uid ? {} : sampleCheckTable);
 
   useEffect(() => {
-    getDefaultItems().then((res) => {
-      const [resItems, resItemCheckTable] = res;
-      if (resItems && resItemCheckTable) {
-        items.update(resItems, resItemCheckTable);
-      }
-    });
+    if (uid) {
+      getDataFromDb(uid).then((res) => {
+        const [resItems, resItemCheckTable] = res;
+        if (resItems && resItemCheckTable) {
+          items.updateState(resItems, resItemCheckTable);
+        }
+      });
+    }
   }, []);
 
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -92,6 +89,12 @@ const Todo: React.FC = () => {
     if (e.key !== "Enter") return;
     items.createItem(inputValue);
     setInputValue("");
+  }
+
+  function logout() {
+    localStorage.clear();
+    toast.success("Logout Success!");
+    items.updateState(sampleItems, sampleCheckTable);
   }
 
   return (
@@ -119,10 +122,12 @@ const Todo: React.FC = () => {
           />
         </section>
       </DndProvider>
-
       <Hint>
         {getStorageUserID() ? (
-          <span>Welcome back!</span>
+          <button onClick={logout}>
+            <GoSignIn size={15} />
+            Logout
+          </button>
         ) : (
           <Link to="/login">
             <GoSignIn size={15} />
