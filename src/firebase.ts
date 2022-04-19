@@ -5,6 +5,8 @@ import {
   signInWithEmailAndPassword,
   GoogleAuthProvider,
   signInWithPopup,
+  onAuthStateChanged,
+  signOut,
 } from "firebase/auth";
 import { getDatabase, ref, child, get, set } from "firebase/database";
 import config from "./firebaseConfig";
@@ -13,6 +15,22 @@ import { Item, ItemCheckTable } from "./types/Item";
 export function initFirebase() {
   // Initialize Firebase
   initializeApp(config);
+  const auth = getAuth();
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      const uid = user.uid;
+      window.localStorage.setItem("uid", uid);
+      console.log("Sign in:", uid);
+    } else {
+      console.log("Sign out ......");
+      window.localStorage.clear();
+    }
+  });
+}
+
+export async function userLogOut() {
+  const auth = getAuth();
+  return await signOut(auth);
 }
 
 export async function getDataFromDb(uid: string) {

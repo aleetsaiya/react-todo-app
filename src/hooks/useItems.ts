@@ -2,7 +2,6 @@ import { useState, useCallback } from "react";
 import { Item, ItemCheckTable, ShowingMode } from "../types/Item";
 import { toast } from "react-toastify";
 import { updateDbItems, updateDbItemCheckTable } from "../firebase";
-import { getStorageUserID } from "../localStorage";
 
 export default function useItems(
   defaultItems: Item[],
@@ -35,7 +34,7 @@ export default function useItems(
     newItemCheckTable[newItem.id] = false;
     setItemCheckTable(newItemCheckTable);
 
-    const uid = getStorageUserID();
+    const uid = window.localStorage.getItem("uid");
     if (uid) {
       updateDbItems(uid, newItems);
       updateDbItemCheckTable(uid, newItemCheckTable);
@@ -48,7 +47,7 @@ export default function useItems(
       newItemCheckTable[id] = !newItemCheckTable[id];
       setItemCheckTable(newItemCheckTable);
 
-      const uid = getStorageUserID();
+      const uid = window.localStorage.getItem("uid");
       if (uid) {
         updateDbItemCheckTable(uid, newItemCheckTable);
       }
@@ -67,7 +66,7 @@ export default function useItems(
       delete newItemCheckTable[id];
       setItemCheckTable(newItemCheckTable);
 
-      const uid = getStorageUserID();
+      const uid = window.localStorage.getItem("uid");
       if (uid) {
         updateDbItems(uid, newItems);
         updateDbItemCheckTable(uid, newItemCheckTable);
@@ -87,7 +86,7 @@ export default function useItems(
     }
     setItemCheckTable(newItemCheckTable);
 
-    const uid = getStorageUserID();
+    const uid = window.localStorage.getItem("uid");
     if (uid) {
       updateDbItems(uid, newItems);
       updateDbItemCheckTable(uid, newItemCheckTable);
@@ -101,7 +100,7 @@ export default function useItems(
         newItems.splice(dragIndex, 1);
         newItems.splice(hoverIndex, 0, prevItems[dragIndex]);
 
-        const uid = getStorageUserID();
+        const uid = window.localStorage.getItem("uid");
         if (uid) {
           updateDbItems(uid, newItems);
         }

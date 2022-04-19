@@ -2,8 +2,7 @@ import React, { useState, useEffect, memo } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { getSampleItems } from "../defaultData";
-import { getDataFromDb } from "../firebase";
-import { getStorageUserID } from "../localStorage";
+import { getDataFromDb, userLogOut } from "../firebase";
 import { Link } from "react-router-dom";
 import { GoSignIn } from "react-icons/go";
 
@@ -64,8 +63,7 @@ const Hint = styled.div`
 const [sampleItems, sampleCheckTable] = getSampleItems();
 
 const Todo: React.FC = () => {
-  const uid = getStorageUserID();
-
+  const uid = window.localStorage.getItem("uid");
   const [inputValue, setInputValue] = useState("");
   const items = useItems(uid ? [] : sampleItems, uid ? {} : sampleCheckTable);
 
@@ -91,10 +89,11 @@ const Todo: React.FC = () => {
     setInputValue("");
   }
 
-  function logout() {
-    localStorage.clear();
-    toast.success("Logout Success!");
-    items.updateState(sampleItems, sampleCheckTable);
+  function logOut() {
+    userLogOut().then(() => {
+      toast.success("Logout Success!");
+      items.updateState(sampleItems, sampleCheckTable);
+    });
   }
 
   return (
@@ -123,8 +122,8 @@ const Todo: React.FC = () => {
         </section>
       </DndProvider>
       <Hint>
-        {getStorageUserID() ? (
-          <button onClick={logout}>
+        {uid ? (
+          <button onClick={logOut}>
             <GoSignIn size={15} />
             Logout
           </button>

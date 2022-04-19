@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { loginWithEmail, loginWithGoogle, createUser } from "../firebase";
-import { setStorageUserID } from "../localStorage";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -28,7 +27,6 @@ export default function useLogin() {
     setLoading(true);
     loginWithEmail(email, password)
       .then((uid) => {
-        setStorageUserID(uid);
         toast.success("Login Success!");
         setTimeout(() => {
           navigate("/");
@@ -62,7 +60,6 @@ export default function useLogin() {
     setLoading(true);
     loginWithGoogle()
       .then((uid) => {
-        setStorageUserID(uid);
         toast.success("Login Success!");
         setTimeout(() => {
           navigate("/");
@@ -85,7 +82,6 @@ export default function useLogin() {
     createUser(email, password)
       .then((uid) => {
         toast.success("Create Success!");
-        setStorageUserID(uid);
         setTimeout(() => {
           navigate("/");
         }, 1000);
