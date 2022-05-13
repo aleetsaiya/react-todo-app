@@ -65,16 +65,22 @@ const [sampleItems, sampleCheckTable] = getSampleItems();
 const Todo: React.FC = () => {
   const uid = window.localStorage.getItem("uid");
   const [inputValue, setInputValue] = useState("");
+  const [isLoading, setLoading] = useState(false);
   const items = useItems(uid ? [] : sampleItems, uid ? {} : sampleCheckTable);
 
   useEffect(() => {
     if (uid) {
-      getDataFromDb(uid).then((res) => {
-        const [resItems, resItemCheckTable] = res;
-        if (resItems && resItemCheckTable) {
-          items.updateState(resItems, resItemCheckTable);
-        }
-      });
+      setLoading(true);
+      getDataFromDb(uid)
+        .then((res) => {
+          const [resItems, resItemCheckTable] = res;
+          if (resItems && resItemCheckTable) {
+            items.updateState(resItems, resItemCheckTable);
+          }
+        })
+        .finally(() => {
+          setLoading(false);
+        });
     }
   }, []);
 
@@ -112,6 +118,7 @@ const Todo: React.FC = () => {
             onClearItem={items.onClearItem}
             checkTable={items.itemCheckTable}
             moveItem={items.moveItem}
+            isLoading={isLoading}
           />
           <ItemListInfo
             itemLeft={items.getItemLeft()}
