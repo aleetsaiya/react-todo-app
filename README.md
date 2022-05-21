@@ -1,6 +1,6 @@
 # Todo app
 
-It's a todo app using Typescript、React、styled-components. The Todo list's UI and materials are provided by [Frontend Mentor](https://www.frontendmentor.io/) and the Login/Logout feature is the extension that I create for this project.
+It's a todo app using Typescript、React、styled-components. [Frontend Mentor](https://www.frontendmentor.io/challenges/todo-app-Su1_KokOW/hub/todo-app-using-typescript-and-react-ryu_gHu45) provides the Todo list UI and materials, the Login/Logout is the new feature that I add to this project.
 
 ## Screenshot
 
